@@ -1,0 +1,32 @@
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+# Load data
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+# Reshape data
+x_train = x_train.reshape(60000, 784)
+x_test = x_test.reshape(10000, 784)
+
+# Normalize pixel values
+x_train = x_train.astype('float32') / 255
+x_test = x_test.astype('float32') / 255
+
+# One-hot encode class labels
+y_train = keras.utils.to_categorical(y_train, 10)  # 10 classes (digits 0-9)
+y_test = keras.utils.to_categorical(y_test, 10)
+
+# Define sequential model
+model = Sequential()
+model.add(Dense(512, activation='relu', input_shape=(784,)))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(10, activation='softmax'))
+
+# Compile and train the model
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.fit(x_train, y_train, epochs=10, validation_data=(x_test, y_test))
+
+# Evaluate the model on test data
+loss, accuracy = model.evaluate(x_test, y_test)
+print('Test accuracy:', accuracy)
